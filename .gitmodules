@@ -10,3 +10,6 @@
 [submodule "Algorithms/CRISPR-Net"]
 	path = Algorithms/CRISPR-Net
 	url = https://github.com/JasonLinjc/CRISPR_Net
+[submodule "Algorithms/OT"]
+	path = Algorithms/OT
+	url = https://github.com/baolab-rice/CRISPR_OT_scoring
