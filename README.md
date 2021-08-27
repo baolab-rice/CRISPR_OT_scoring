@@ -43,7 +43,6 @@ Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases r
 
 ## Off-target scores calculation:  
 **Folder: Algorithm**  
-<<<<<<< Updated upstream
 The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S3.  
 =======
 
