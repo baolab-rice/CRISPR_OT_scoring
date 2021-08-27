@@ -5,13 +5,13 @@
 
 Table S1-S3 of the CRISPR off-target scoring paper.
 
-+ Table S1
++ Table S1  
 Detailed information of studies included in TrueOT dataset, including PUBMED ID, the detection method of targets, cell type, number of evaluated targets and true targets, and the summary of off-target profile assessment.
 
-+ Table S2
++ Table S2  
 Detailed information of the TrueOT dataset, in which all 1903 datapoints were evaluated through experimental measurement of target sequence modification frequency.
 
-+ Table S3
++ Table S3  
 Summary of datasets utilized in ML-based off-target scoring model development, supporting the pairwise comparison section. 
 
 ## TrueOT: The benchmark dataset we proposed, and its original data sources. 
