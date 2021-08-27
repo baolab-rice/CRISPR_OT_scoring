@@ -3,11 +3,9 @@
 ## TrueOT: The benchmark dataset we proposed, and its original data sources.
 
 **Folder: data_unprocessed**  
-<<<<<<< Updated upstream
-The original data sources of our manually curated true positive list collected from 11 studies (as also described in Supplementary Table Sp1): 
+
+The original data sources of our manually curated true positive list collected from 11 studies (as also described in Table S1): 
 =======
-The original data sources of our manually curated true positive list collected from 11 studies (as also described in Supplementary Table Sp-1): 
->>>>>>> Stashed changes
 
 + 2020_Lazzarotto
 Lazzarotto, Cicera R., et al. "CHANGE-seq reveals genetic and epigenetic effects on CRISPR–Cas9 genome-wide activity." Nature biotechnology 38.11 (2020): 1317-1327.
@@ -46,10 +44,8 @@ Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases r
 ## Off-target scores calculation:  
 **Folder: Algorithm**  
 <<<<<<< Updated upstream
-The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in supplementary table Sp3.  
+The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S3.  
 =======
-The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in supplementary table sp3.  
->>>>>>> Stashed changes
 
 + CCTOP off-target scores were computed based on the formula in the original paper:  
 Stemmer, Manuel, et al. "CCTop: an intuitive, flexible and reliable CRISPR/Cas9 target prediction tool." PloS one 10.4 (2015).
