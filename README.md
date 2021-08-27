@@ -1,11 +1,24 @@
 # Dataset preparation and data processing for the CRISPR OT scoring paper
 
-## TrueOT: The benchmark dataset we proposed, and its original data sources.
+## Supplementary tables 
+**Folder: Supplementary tables**
 
-**Folder: data_unprocessed**  
+Table S1-S3 of the CRISPR off-target scoring paper.
+
++ Table S1
+Detailed information of studies included in TrueOT dataset, including PUBMED ID, the detection method of targets, cell type, number of evaluated targets and true targets, and the summary of off-target profile assessment.
+
++ Table S2
+Detailed information of the TrueOT dataset, in which all 1903 datapoints were evaluated through experimental measurement of target sequence modification frequency.
+
++ Table S3
+Summary of datasets utilized in ML-based off-target scoring model development, supporting the pairwise comparison section. 
+
+## TrueOT: The benchmark dataset we proposed, and its original data sources. 
+
+**Folder: TrueOT_unprocessded_data**
 
 The original data sources of our manually curated true positive list collected from 11 studies (as also described in Table S1): 
-=======
 
 + 2020_Lazzarotto
 Lazzarotto, Cicera R., et al. "CHANGE-seq reveals genetic and epigenetic effects on CRISPR–Cas9 genome-wide activity." Nature biotechnology 38.11 (2020): 1317-1327.
@@ -41,10 +54,11 @@ Wang, Xiaoling, et al. "Unbiased detection of off-target cleavage by CRISPR-Cas9
 Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases revealed by multiplex Digenome-seq." Genome research 26.3 (2016): 406-415. 
 
 
-## Off-target scores calculation:  
+## Off-target scores calculation 
 **Folder: Algorithm**  
+
 The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S3.  
-=======
+
 
 + CCTOP off-target scores were computed based on the formula in the original paper:  
 Stemmer, Manuel, et al. "CCTop: an intuitive, flexible and reliable CRISPR/Cas9 target prediction tool." PloS one 10.4 (2015).
