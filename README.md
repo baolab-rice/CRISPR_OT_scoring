@@ -72,7 +72,9 @@ S1C_on_input_data.py: script for running S1C model on any input XLSX file. Curre
 sample_model_train.py: sample training script for training the S1C on the Proxy Dataset. 
 
 custom_scoring/S1C/: raw model files
+
 custom_scoring/parsed_datasets/: pre-parsed datasets (TrueOT and Proxy Dataset) for model training
+
 custom_scoring/siamcrispr: module files for our Siamese networks 
 
 ## Baseline Algorithms: Off-target scores calculation 
@@ -116,12 +118,15 @@ https://crispr.bme.gatech.edu/
 Lin, Jiecong, et al. "CRISPR‐Net: A Recurrent Convolutional Network Quantifies CRISPR Off‐Target Activities with Mismatches and Indels." Advanced Science 7.13 (2020): 1903562.
 https://codeocean.com/capsule/9553651/tree/v1
 
-# Pairwise Comparisons
+## Pairwise Comparisons
 **Folder: Algorithms/pairwise_evaluation**
 Contains all files necessary to regenerate key results of Tables 2 and 3, i.e. the baseline algorithms' performance on appropriate subsets of TrueOT and the S1C. 
 
 pairwise_compare.py: Can run this to direclty get the results
+
 baseline_overlap.py: Loads in training data of ML baselines and determines which guideRNAs in TrueOT need to be excluded from pairwise comparisons.
+
 overlap_mask_confirm.py: Generates boolean masks for all of TrueOT for pairwise_comparisons
+
 notes.txt: contains other fine-grained info of other files in folder. 
 
