@@ -53,8 +53,26 @@ Wang, Xiaoling, et al. "Unbiased detection of off-target cleavage by CRISPR-Cas9
 + 2016_Kim  
 Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases revealed by multiplex Digenome-seq." Genome research 26.3 (2016): 406-415. 
 
+## S1C Scoring Algoirthm
+**Folder: custom_scoring**
 
-## Off-target scores calculation 
+Contains files for using our S1C model on any dataset. 
+
+Version notes for using our custom models: 
+h5py < 3.0
+tensorflow 2.x (we used 2.4.1)
+python > 3
+
+We recommend running S1C_on_input_data.py and sample_model_train.py after cloning this repo and modifying an environment with the above version info to ensure things are working correctly. 
+S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataste
+- Excel sheet needs separate columns of guideRNAs, DNA targets, and labels
+sample_model_train.py: sample training script for training the S1C on the Proxy Dataset. 
+
+custom_scoring/S1C/: raw model files
+custom_scoring/parsed_datasets/: pre-parsed datasets (TrueOT and Proxy Dataset) for model training
+custom_scoring/siamcrispr: module files for our Siamese networks 
+
+## Baseline Algorithms: Off-target scores calculation 
 **Folder: Algorithm**  
 
 The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S3.  
