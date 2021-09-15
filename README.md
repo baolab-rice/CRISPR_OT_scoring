@@ -120,6 +120,7 @@ https://codeocean.com/capsule/9553651/tree/v1
 
 ## Pairwise Comparisons
 **Folder: Algorithms/pairwise_evaluation**
+
 Contains all files necessary to regenerate key results of Tables 2 and 3, i.e. the baseline algorithms' performance on appropriate subsets of TrueOT and the S1C. 
 
 pairwise_compare.py: Can run this to direclty get the results
