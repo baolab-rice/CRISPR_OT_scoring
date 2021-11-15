@@ -58,7 +58,7 @@ Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases r
 
 Contains files for using our S1C model on any dataset. 
 
-#Version notes for using our custom models: 
+# Version notes for using our custom models: 
 Known version *requirements*
 - h5py < 3.0
 - tensorflow 2.x (we used 2.4.1)
