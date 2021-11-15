@@ -420,11 +420,16 @@ def group_gRNAs(raw_data, shuffle=True, rngseed=None):
     return raw_data, groups
     
 
-def crispr_read_excel(filename, colgRNA, colOT, colLabel, sheetName='Sheet1', skipRows=0):
+def crispr_read_excel(filename, colgRNA, colOT, colLabel=None, sheetName='Sheet1', skipRows=0):
     parsedData = pd.DataFrame(columns=['gRNA', 'OT', 'label'])    
     df = pd.read_excel(filename, sheet_name=sheetName, skiprows=skipRows)    
-    parsedData = df.iloc[:,[colgRNA, colOT, colLabel]]
+    
+    if colLabel is None: 
+        parsedData = parsedData.assign(gRNA=df.iloc[:,colgRNA])
+        parsedData = parsedData.assign(OT=df.iloc[:,colOT])        
+    else: 
+        parsedData = df.iloc[:,[colgRNA, colOT, colLabel]]
     colNames = list(parsedData)
-
+    
     return parsedData.rename(columns={colNames[0]: 'gRNA', colNames[1]:'OT', colNames[2]:'label'})
     

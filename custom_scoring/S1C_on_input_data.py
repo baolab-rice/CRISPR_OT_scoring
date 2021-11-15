@@ -20,10 +20,16 @@ from siamcrispr import ml_data_utils, network_utils, custom_evaluation_functions
 ###
 # Modify as needed
 filename = (r'../Supplementary_tables/Supplementary_Table_2_08252021.xlsx') # TrueOT
-seqDF = ml_data_utils.crispr_read_excel(filename, 1, 2, 4, skipRows=2) # pass excel info (column numbers and such)
+
+#zero-indexed columns in file. See ml_data_utils.crispr_read_excel for details
+colgRNA = 1 
+colOT = 2 
+colLabel = 4 # use None if no label available
+skip_rows = 2 #number of rows to skip in xlsx file parsing
 dropDuplicates=True
 ###
 
+seqDF = ml_data_utils.crispr_read_excel(filename, colgRNA, colOT, colLabel, skipRows=skip_rows) # pass excel info (column numbers and such)
 
 # Main
 if dropDuplicates:
@@ -51,14 +57,18 @@ Y_preds = np.zeros((seqDF.shape[0], 5))
 for m in range(len(model_ensemble)): 
     Y_preds[:,m] = model_ensemble[m].predict([all_gRNAs, all_OTs])[:,0]
     print('Ensemble member #{} complete'.format(m+1))
-temp = np.unique(Y_preds)
-thresholds = np.sort(np.concatenate((temp-1e-6, temp+1e-6)))
-ROC_AUC = custom_evaluation_functions.custom_ROC_ensemble(seqDF['label'], Y_preds, thresholds)
 
+print('S1C raw output available in Y_preds variable')
 
-#Sanity check results. Invert scores for built-in ROC functions
-ROC_AUC_builtin = roc_auc_score(np.asarray(seqDF['label']).astype('int'), \
-                                -np.median(Y_preds, axis=1)) #verifies custom ROC method
+if colLabel is not None:     
+    temp = np.unique(Y_preds)
+    thresholds = np.sort(np.concatenate((temp-1e-6, temp+1e-6)))
+    ROC_AUC = custom_evaluation_functions.custom_ROC_ensemble(seqDF['label'], Y_preds, thresholds)
     
-print('ROC_AUC: ' + str(ROC_AUC))
-
+    
+    #Sanity check results. Invert scores for built-in ROC functions
+    ROC_AUC_builtin = roc_auc_score(np.asarray(seqDF['label']).astype('int'), \
+                                    -np.median(Y_preds, axis=1)) #verifies custom ROC method
+        
+    print('ROC_AUC: ' + str(ROC_AUC))
+    
