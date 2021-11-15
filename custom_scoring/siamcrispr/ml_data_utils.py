@@ -58,10 +58,12 @@ class Preprocessor(ABC):
         dataset is dataframe with 'gRNA', 'OT', and 'label' columns
         """
         
-        if type(dataset) is str: # assume it's a .pkl file to load 
+        if type(dataset) is str and dataset[-3:]=='pkl': 
             openfile = open(dataset, 'rb')
             raw_data = pickle.load(openfile)
             openfile.close()     
+        elif type(dataset) is str and dataset[-3:]=='csv': 
+            raw_data = pd.read_csv(dataset)
         else: 
             raw_data = dataset 
         

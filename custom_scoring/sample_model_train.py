@@ -29,7 +29,7 @@ def get_files(data_directory):
     dataFilepaths = []
     for f in range(len(allfiles)): 
         filesplit = allfiles[f].split('.')
-        if  len(filesplit) > 1 and filesplit[1] == 'pkl':   
+        if  len(filesplit) > 1 and filesplit[1] == 'csv':   
             dataFilepaths.append(data_directory + '\\' + allfiles[f])
     return dataFilepaths
 
