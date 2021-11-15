@@ -58,13 +58,18 @@ Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases r
 
 Contains files for using our S1C model on any dataset. 
 
-Version notes for using our custom models: 
-
+#Version notes for using our custom models: 
+Known version *requirements*
 - h5py < 3.0
-
 - tensorflow 2.x (we used 2.4.1)
-
 - python > 3
+
+Other necessary packages (with versions as we used them, but likely not as strict)
+- numpy 1.19.5
+- pandas 1.2.3
+- sklearn 0.24.1
+
+A full package list is available at custom_scoring/package_list.txt
 
 We recommend running S1C_on_input_data.py and sample_model_train.py after cloning this repo and modifying an environment with the above version info to ensure things are working correctly. 
 
