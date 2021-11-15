@@ -77,7 +77,7 @@ We recommend running S1C_on_input_data.py and sample_model_train.py after clonin
 S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataset. Use an Excel (.xlsx file) with columns of guide RNAs, DNA targets, and (optionally) labels. See the top few lines of this script and edit accordingly. 
 
 ### Training S1C on data
-sample_model_train.py: sample training script for training the S1C on the Proxy TrainCV. Any training dataset shoulud be stored as a CSV with a 'gRNA', 'OT', and 'label' columns. More columns are fine, but they will be ignored.  Change the filepath in line 49 to point the localData to a foler with your stored .csv dataset. 
+sample_model_train.py: sample training script for training the S1C on the Proxy TrainCV. Any training dataset should be stored as a CSV with a 'gRNA', 'OT', and 'label' columns. More columns are fine, but they will be ignored.  Change the filepath in line 49 to point the localData to a foler with your stored .csv dataset. 
 
 ### Other details
 - custom_scoring/S1C/: raw model files
