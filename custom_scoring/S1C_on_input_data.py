@@ -19,7 +19,7 @@ from siamcrispr import ml_data_utils, network_utils, custom_evaluation_functions
 
 ###
 # Modify as needed
-filename = (r'..\Supplementary tables\Supplementary Table 2_08252021.xlsx') # TrueOT
+filename = (r'../Supplementary_tables/Supplementary_Table_2_08252021.xlsx') # TrueOT
 seqDF = ml_data_utils.crispr_read_excel(filename, 1, 2, 4, skipRows=2) # pass excel info (column numbers and such)
 dropDuplicates=True
 ###
