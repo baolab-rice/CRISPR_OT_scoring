@@ -60,9 +60,9 @@ Contains files for using our S1C model on any dataset.
 
 ### Version notes for using our custom models: 
 Known version *requirements*
-- h5py < 3.0
+- h5py < 3.0 (we used 2.10.0)
 - tensorflow 2.x (we used 2.4.1)
-- python > 3
+- python > 3 (we used 3.8.0)
 
 Other necessary packages (with versions as we used them, but likely not as strict)
 - numpy 1.19.5
