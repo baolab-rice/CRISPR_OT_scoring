@@ -58,27 +58,31 @@ Kim, Daesik, et al. "Genome-wide target specificities of CRISPR-Cas9 nucleases r
 
 Contains files for using our S1C model on any dataset. 
 
-Version notes for using our custom models: 
-
-- h5py < 3.0
-
+### Version notes for using our custom models: 
+Known version *requirements*
+- h5py < 3.0 (we used 2.10.0)
 - tensorflow 2.x (we used 2.4.1)
+- python > 3 (we used 3.8.0)
 
-- python > 3
+Other necessary packages (with versions as we used them, but likely not as strict)
+- numpy 1.19.5
+- pandas 1.2.3
+- sklearn 0.24.1
+
+A full package list is available at custom_scoring/package_list.txt
 
 We recommend running S1C_on_input_data.py and sample_model_train.py after cloning this repo and modifying an environment with the above version info to ensure things are working correctly. 
 
-S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataste
+### Running S1C on input data
+S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataset. Use an Excel (.xlsx file) with columns of guide RNAs, DNA targets, and (optionally) labels. See the top few lines of this script and edit accordingly. 
 
-- Excel sheet needs separate columns of guideRNAs, DNA targets, and labels
+### Training S1C on data
+sample_model_train.py: sample training script for training the S1C on the Proxy TrainCV. Any training dataset should be stored as a CSV with a 'gRNA', 'OT', and 'label' columns. More columns are fine, but they will be ignored.  Change the filepath in line 49 to point the localData to a foler with your stored .csv dataset. 
 
-sample_model_train.py: sample training script for training the S1C on the Proxy Dataset. 
-
-custom_scoring/S1C/: raw model files
-
-custom_scoring/parsed_datasets/: pre-parsed datasets (TrueOT and Proxy Dataset) for model training
-
-custom_scoring/siamcrispr: module files for our Siamese networks 
+### Other details
+- custom_scoring/S1C/: raw model files
+- custom_scoring/parsed_datasets/: pre-parsed datasets (TrueOT and Proxy Dataset) for model training. We originally used .pkl files storing pandas dataframes, but for broader compatibility in environments, we saved these same datasets in .csv's and load them with Pandas in the code (bypassing common issues with pickle). The .pkl versions are still available.
+- custom_scoring/siamcrispr: module files for our Siamese networks 
 
 ## Baseline Algorithms: Off-target scores calculation 
 **Folder: Algorithm**  
