@@ -1,9 +1,15 @@
+# Revision Notes: 
+
++ Rev. 1 (August 2021): original bioRxiv submission
+
++ Rev. 2 (December 2021): updated version + models reflecting our bioRxiv update (planning to post, Dec. 2021)
+
 # Dataset preparation and data processing for the CRISPR OT scoring paper
 
 ## Supplementary tables 
 **Folder: Supplementary tables**
 
-Table S1-S3 of the CRISPR off-target scoring paper.
+Table S1-S4 of the CRISPR off-target scoring paper.
 
 + Table S1  
 Detailed information of studies included in TrueOT dataset, including PUBMED ID, the detection method of targets, cell type, number of evaluated targets and true targets, and the summary of off-target profile assessment.
@@ -11,12 +17,15 @@ Detailed information of studies included in TrueOT dataset, including PUBMED ID,
 + Table S2  
 Detailed information of the TrueOT dataset, in which all 1903 datapoints were evaluated through experimental measurement of target sequence modification frequency.
 
-+ Table S3  
++ Table S3 (new as of Rev2): 
+Detailed information of +/- labels, bulge/non-bulge datapoints in all datasets used in study. 
+
++ Table S4 (previously Table S3 in Rev1)
 Summary of datasets utilized in ML-based off-target scoring model development, supporting the pairwise comparison section. 
 
 ## TrueOT: The benchmark dataset we proposed, and its original data sources. 
 
-**Folder: TrueOT_unprocessded_data**
+**Folder: TrueOT_unprocessed_data**
 
 The original data sources of our manually curated true positive list collected from 11 studies (as also described in Table S1): 
 
@@ -74,7 +83,7 @@ A full package list is available at custom_scoring/package_list.txt
 We recommend running S1C_on_input_data.py and sample_model_train.py after cloning this repo and modifying an environment with the above version info to ensure things are working correctly. 
 
 ### Running S1C on input data
-S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataset. Use an Excel (.xlsx file) with columns of guide RNAs, DNA targets, and (optionally) labels. See the top few lines of this script and edit accordingly. 
+S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataset. Use an Excel (.xlsx file) with columns of guide RNAs, DNA targets, and (optionally) labels. You may also use a CSV, although see the code for custom_scoring/siamcrispr/ml_data_utils.crispr_read_csv when editing. See the top few lines of this script and edit accordingly. 
 
 ### Training S1C on data
 sample_model_train.py: sample training script for training the S1C on the Proxy TrainCV. Any training dataset should be stored as a CSV with a 'gRNA', 'OT', and 'label' columns. More columns are fine, but they will be ignored.  Change the filepath in line 49 to point the localData to a foler with your stored .csv dataset. 
@@ -130,7 +139,7 @@ https://codeocean.com/capsule/9553651/tree/v1
 
 Contains all files necessary to regenerate key results of Tables 2 and 3, i.e. the baseline algorithms' performance on appropriate subsets of TrueOT and the S1C. 
 
-pairwise_compare.py: Can run this to direclty get the results
+pairwise_compare.py: Can run this to directly get the results
 
 baseline_overlap.py: Loads in training data of ML baselines and determines which guideRNAs in TrueOT need to be excluded from pairwise comparisons.
 
