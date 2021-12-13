@@ -1,9 +1,14 @@
+# Revision Notes: 
+
+Rev. 1 (August 2021): original bioRxiv submission
+Rev. 2 (December 2021): updated version + models reflecting our bioRxiv update (planning to post, Dec. 2021)
+
 # Dataset preparation and data processing for the CRISPR OT scoring paper
 
 ## Supplementary tables 
 **Folder: Supplementary tables**
 
-Table S1-S3 of the CRISPR off-target scoring paper.
+Table S1-S4 of the CRISPR off-target scoring paper.
 
 + Table S1  
 Detailed information of studies included in TrueOT dataset, including PUBMED ID, the detection method of targets, cell type, number of evaluated targets and true targets, and the summary of off-target profile assessment.
