@@ -5,9 +5,9 @@ Sample script to evaluate saved S1C on your own dataset
 
 Reference: 
 [1] P. K. Kota, Y. Pan, H. Vu, M. Cao, R. G. Baraniuk, and G. Bao, "The Need 
-for Transfer Learning in CRISPR-CasOff-Target Scoring," Aug. 2021.
+for Transfer Learning in CRISPR-CasOff-Target Scoring," Dec. 2021
 
-bioRxiv: 
+bioRxiv: rev 2 updated December 2021; rev1 originally August 2021.
     
 """
 import numpy as np
