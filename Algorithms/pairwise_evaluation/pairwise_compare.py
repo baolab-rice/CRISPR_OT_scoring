@@ -9,14 +9,18 @@ are available upon request, but all seeds performed extremely similarly (low sta
 
 Reference: 
 [1] P. K. Kota, Y. Pan, H. Vu, M. Cao, R. G. Baraniuk, and G. Bao, "The Need 
-for Transfer Learning in CRISPR-CasOff-Target Scoring," Aug. 2021.
+for Transfer Learning in CRISPR-CasOff-Target Scoring," Dec. 2021.
 
-bioRxiv: 
+Updated for rev2: Dec. 2021 to reflect new models    
+
+bioRxiv: rev 2 updated December 2021; rev1 originally August 2021.
     
 """
 import pandas as pd
+import pdb
 import numpy as np
 import pickle
+from copy import deepcopy
 from sklearn.metrics import roc_auc_score, precision_recall_curve, auc
 from siamcrispr import network_utils, ml_data_utils, custom_evaluation_functions
 
@@ -26,48 +30,60 @@ def pr_auc(y_true, y_preds):
     return auc(rec, prec)
 
 
-seqFiles = r'TrueOText_v10+allscores_format.xlsx'
-maskFile = r'TrueOText_pairs_overlap_mask_loop.xlsx'
+seqFiles = r'TrueOT_v1_1_allscores.xlsx'
+maskFile = r'TrueOT_v1_1_rawmasks.xlsx'
 
-with open(r'21-05-26_trueOTv10_indelMask.pkl', 'rb') as f: 
-    indelMask = pickle.load(f)
-indelMask = indelMask.astype('bool')    
-sheetName= 'TrueOText_v10+allscores_format'
+sheetName= 'TrueOT'
 
 col_g = 1
 col_OT = 2
-col_label = 5
+col_label = 4
 removeDuplicates=True #based on {gRNA,OT,label} unique triplets
 
-#maskCompare = ['Cropit', 'Hsu', 'CCTOP', 'COSMID', 'MIT', 'CNN_std', 'elevation', 'CFD', 'predictCRISPR', 'CRISTA', 'Net_ori']
-maskCompare = ['Cropit', 'Hsu', 'CCTOP', 'MIT', 'CFD','COSMID', 'CNN_std', 'elevation',  'predictCRISPR', 'CRISTA', 'Net_ori']
+maskCompare = ['Cropit', 'Hsu', 'CCTOP', 'MIT', 'CFD','COSMID', 'CNN_std', 'elevation',  'predictCRISPR', 'CRISTA', 'CRISPR-NET', 'crisproff']
 all_labels = [0]
 
 # S1C comparison: 
 lf =  network_utils.get_contrastive_loss()# Loss function 
 modelPreproc = ml_data_utils.PreprocessOneHot4D(max_length=26, strip_dash=True)
-cv = 5
+cv = 3
 modelDir = r'..\\..\\custom_scoring\\S1C'
-coreModel =  network_utils.SCNN((4,26,1), numFilters=[16384], kWidth=[8])
+coreModel =  network_utils.SCNN((4,26,1), numFilters=[8192], kWidth=[6])
+
+
+
+
 modelFiles = []
 for i in range(cv):                                 
-    modelFiles.append(modelDir + '\\S1C_cv' + str(i+1))
-
-
-df = pd.read_excel (seqFiles, sheet_name=sheetName)
-currentData = df.iloc[:,[col_g, col_OT, col_label]]    
-colNames = list(currentData)
-currentData = currentData.rename(columns={colNames[0]: 'gRNA', colNames[1]:'OT', colNames[2]:'label'})    
+    modelFiles.append(modelDir + '\\S1C_k6_cv' + str(i+1))
+df = pd.read_excel(seqFiles, sheet_name=sheetName, skiprows=2)
+currentData = ml_data_utils.crispr_read_excel(seqFiles, col_g, col_OT, colLabel=col_label,skipRows=2, sheetName='TrueOT')
+currentData2= deepcopy(currentData)
 
 if removeDuplicates: 
-    dupMaskBool = np.invert(np.asarray(currentData.duplicated()))
-    dupMask = np.where(dupMaskBool==True)
-
-all_gRNAs, all_OTs, all_labels1, _, _= modelPreproc.preprocess(currentData, shuffle=False, groupGRNA=False) 
-all_labels = np.asarray(df['TrueOT'])
+    currentData2['gRNA'] =currentData2['gRNA'].str.upper()
+    currentData2['OT'] =currentData2['OT'].str.upper()
         
+    dupMaskBool = np.invert(np.asarray(currentData2.duplicated()))
+    dupMask = np.where(dupMaskBool==True)
+    
+all_gRNAs, all_OTs, all_labels, _, _= modelPreproc.preprocess(currentData, shuffle=False, groupGRNA=False, drop_duplicates=False) 
+
+all_labels1 = np.asarray(df['TrueOT'])
+if not np.all(all_labels1==all_labels):     
+    raise ValueError('check labels - data mismatch. Could have been shuffled or grouped unintentionally')
+
+
+#Generate indelMask:
+indelMask = np.zeros(currentData.shape[0])> 1
+for i in range(currentData.shape[0]):
+    if len(currentData['OT'][i]) != 23 or '-' in currentData['OT'][i]: 
+        indelMask[i] = True
+
+
 # Evaluate masks - assume on all files 
-df = pd.read_excel(seqFiles, sheet_name=sheetName)
+maskDF = pd.read_excel(maskFile)
+
 datapoints = []
 
 # Compare over all, mm only, indel
@@ -78,9 +94,9 @@ datapoints = np.zeros((len(maskCompare), 3))
 
 for m in range(len(maskCompare)):  
     predTemp = df[maskCompare[m]]
-    mask = np.invert(np.asarray(predTemp.isnull())) # datapoints that were actually able to be scored        
-    try: 
-        gRoverlapMask = np.invert(np.asarray(pd.read_excel(maskFile, sheet_name=maskCompare[m]))[:,0])        
+    mask = np.invert(np.asarray(predTemp.isnull())) # datapoints that were actually able to be scored            
+    try:         
+        gRoverlapMask = np.invert(maskDF['{}_in_TrueOT'.format(maskCompare[m])])
         if gRoverlapMask.size != mask.size:
             raise ValueError('Masks of different length')
     except: 
@@ -96,7 +112,8 @@ for m in range(len(maskCompare)):
             
     Y_preds = np.asarray(df[maskCompare[m]])
     
-    
+    if m == 10: 
+        pdb.set_trace()
     ROC_compare[m, 0] = roc_auc_score(all_labels[finalMask], Y_preds[finalMask])
     PVR_compare[m,0] = pr_auc(all_labels[finalMask], Y_preds[finalMask])
 
@@ -136,7 +153,6 @@ print('Eval of S1C on full TrueOT complete')
 
 
 # Evaluate masks - assume on all files 
-df = pd.read_excel(seqFiles, sheet_name=sheetName)
 datapoints = []
 
 
@@ -148,9 +164,8 @@ for m in range(len(maskCompare)):
     predTemp = df[maskCompare[m]]
     mask = np.invert(np.asarray(predTemp.isnull())) # datapoints that were actually able to be scored
         
-    try: 
-        gRoverlapMask = np.invert(np.asarray(pd.read_excel(maskFile, sheet_name=maskCompare[m]))[:,0])
-        #gRoverlapMask = pwMaskTable[:,m]
+    try:         
+        gRoverlapMask = np.invert(maskDF['{}_in_TrueOT'.format(maskCompare[m])])
         if gRoverlapMask.size != mask.size:
             raise ValueError('Masks of different length')
     except: 
@@ -194,4 +209,4 @@ for m in range(len(maskCompare)):
 print('For Tables 2 and 3 in [1], see variables ''ROC_model_compare'', ''ROC_compare'', ''PVR_model_compare'', ''PVR_compare'', and ''datapoints''.')
 print("These are S1C ROC-AUC, baseline ROC-AUC, S1C PR-AUC, baseline PR-AUC, and n (datapoints) respectively")
 print("Note the S1C values will be close but not exact to the values in Tables 2 and 3 since those Tables report an average over 5 seeds, whereas only one seed is loaded in this script.")
-print('Column 1 is on the entire subset. Column 2 is on ``Other'' (non-bulge) datapoints within the subset. Column 3 is on bulge datapoints within the subset')
+print('Column 1 is on the entire subset. Column 2 is on "Other" (non-bulge) datapoints within the subset. Column 3 is on bulge datapoints within the subset')
