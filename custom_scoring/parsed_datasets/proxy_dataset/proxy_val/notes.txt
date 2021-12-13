@@ -1,5 +1,0 @@
-20-10-13... is the full Proxy Dataset with unique gRNAs (distinct from TrueOT) 
-
-proxy_validation is stored more for convenience: it's the ~20% subset that was used in the paper (694 datapoints) 
-- stores a list of [encoded gRNAs, encoded targets, labels] 
-
