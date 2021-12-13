@@ -6,18 +6,20 @@ Sequence preprocessing (cleaning data and encoding sequences) and data splitting
 Reference: 
 [1] P. K. Kota, Y. Pan, H. Vu, M. Cao, R. G. Baraniuk, and G. Bao, "The Need 
 for Transfer Learning in CRISPR-CasOff-Target Scoring," Aug. 2021.
-
 bioRxiv: 
     
 """
+
 import numpy as np
 import random
 import pickle
-import pdb
 import pandas as pd
+import pdb
+
 from copy import deepcopy
 from pandas import concat
 from abc import ABC, abstractmethod
+from tensorflow.keras.callbacks import LearningRateScheduler as LRS
 
 class CustomException(Exception):
     def __init__(self, message): 
@@ -45,7 +47,7 @@ class Preprocessor(ABC):
             -1 -> zero pad on left side to encoding length
             0 -> no padding
             1 -> zero pad on right side to encoding length            
-        """        
+        """         
         self.num_downsample = num_downsample
         self.pos_prop = pos_prop
         self.strip_dash = strip_dash
@@ -53,19 +55,29 @@ class Preprocessor(ABC):
         self.pad = pad
         
         
-    def preprocess(self, dataset, shuffle=True, rngseed=None, groupGRNA=True):                 
+    def preprocess(self, dataset, shuffle=True, rngseed=None, groupGRNA=True, drop_dup_woPAM =False):
         """
         dataset is dataframe with 'gRNA', 'OT', and 'label' columns
         """
         
-        if type(dataset) is str and dataset[-3:]=='pkl': 
+        if type(dataset) is str: # assume it's a .pkl file to load 
             openfile = open(dataset, 'rb')
             raw_data = pickle.load(openfile)
             openfile.close()     
-        elif type(dataset) is str and dataset[-3:]=='csv': 
-            raw_data = pd.read_csv(dataset)
         else: 
             raw_data = dataset 
+        
+        
+        raw_data2 = deepcopy(raw_data)
+        raw_data2 = raw_data2.reset_index(drop=True)
+        raw_data2['gRNA'] = raw_data2['gRNA'].str.upper()
+        raw_data2['OT'] = raw_data2['OT'].str.upper()        
+        if len(raw_data2['gRNA'][0]) == 23: 
+            for i in range(raw_data2.shape[0]):                 
+                raw_data2['gRNA'][i] = raw_data2['gRNA'][i][:-3] #trim PAM                                    
+        
+        if drop_dup_woPAM:             
+            raw_data = raw_data.iloc[np.where(np.invert(raw_data2.duplicated()))[0]]        
         
         labels = raw_data['label'].values
         labels = (labels > self.threshold).astype('int')
@@ -85,9 +97,12 @@ class Preprocessor(ABC):
         labels = raw_data['label'].values
         
         # get rid of extra spaces if any
-        for i in range(len(gRNAs)):             
+        for i in range(len(gRNAs)): 
+            #try: 
             gRNAs[i] = gRNAs[i].replace(' ', '')
             OTs[i] = OTs[i].replace(' ','')
+            #except: 
+                #pdb.set_trace()
             
         if self.strip_dash is True: 
             for i in range(len(gRNAs)):
@@ -101,8 +116,6 @@ class Preprocessor(ABC):
         
 
     def downsample(self, labels): 
-        """ Not used in [1]
-        """
         #Downsample if applicable before one-hot encoding
         if self.pos_prop is None: 
             inds = np.random.choice(len(labels), size=self.num_downsample, replace=False)
@@ -125,7 +138,6 @@ class Preprocessor(ABC):
             negInds = np.random.choice(negChoices, size=numNegSelect, replace=False)
             inds = np.concatenate((posInds, negInds))
         return inds
-    
     def get_max_len(self, gRNAs, OTs):         
         #Get max length between all gRNA and target sequences
         if self.max_length is None: #unspecified 
@@ -135,6 +147,9 @@ class Preprocessor(ABC):
         else: 
             maxLength = self.max_length
         return maxLength
+    
+    
+    
             
     @abstractmethod
     def encode(self):
@@ -158,7 +173,7 @@ class PreprocessorPreEncoded(Preprocessor):
         return gRNAs_preprocessed, OTs_preprocessed, labels, inputShape
 
 class PreprocessOneHot4D(Preprocessor):    
-    
+        
     def __init__(self, num_downsample=None, pos_prop=None, strip_dash=False, threshold=0, pad=-1, max_length=None):         
         """ maxLength sets the encoding length and zero pads anything shorter
         """
@@ -222,6 +237,7 @@ class PreprocessOneHot4D(Preprocessor):
 class PreprocessOneHot5Ddel(PreprocessOneHot4D):    
     """ Not used in [1] 
     """
+
     def __init__(self, num_downsample=None, pos_prop=None, strip_dash=False, threshold=0, pad=-1, max_length=None):         
         #super(Preprocessor, self).__init__(num_downsample, pos_prop, strip_dash, threshold, pad)
         super().__init__(num_downsample, pos_prop, strip_dash, threshold, pad)
@@ -241,14 +257,17 @@ class PreprocessOneHot5Ddel(PreprocessOneHot4D):
 class PreprocessOneHot4Drnn(PreprocessOneHot4D): 
     """Not used in [1] but small shape adjustments for developing RNNs
     """
+  
     def encode_reshape(self, enc): 
-        enc = np.transpose(enc) #e.g. 23 x 4                
+        enc = np.transpose(enc) #e.g. 23 x 4        
+        #return np.reshape(enc, (1, np.shape(enc)[0], np.shape(enc)[1], 1))                
         return np.reshape(enc, (1, np.shape(enc)[0], np.shape(enc)[1]))                
         
 
 class Preprocess4DSCNN(PreprocessOneHot4D): 
     """ Pairs with netweork_utils.LearnedDistancePreprocWithSCNN and network_utils.PositionDistanceSCNN
     """
+
     def __init__(self, scnn, num_downsample=None, pos_prop=None, strip_dash=False, threshold=0, pad=-1, max_length=None):         
     
         super().__init__(num_downsample, pos_prop, strip_dash, threshold, pad)
@@ -264,8 +283,8 @@ class Preprocess4DSCNN(PreprocessOneHot4D):
         self.encoding_dim = 4
         self.scnn = scnn
         
-    def preprocess(self, dataset, shuffle=True, rngseed=None, groupGRNA=True):
-        gR, OT, labels, inputShape, raw_data = super().preprocess(dataset, shuffle, rngseed, groupGRNA)        
+    def preprocess(self, dataset, shuffle=True, rngseed=None, groupGRNA=True, drop_duplicates=True):
+        gR, OT, labels, inputShape, raw_data = super().preprocess(dataset, shuffle, rngseed, groupGRNA, drop_duplicates=drop_duplicates)
                 
         gR_OT_dist = self.scnn.predict([gR, OT])
         return gR_OT_dist, None, labels, gR_OT_dist.shape[1:], raw_data
@@ -324,9 +343,9 @@ def get_max_len(filepath_withr):
             the corresponding number of negative labels to maintain the proportion 
             - e.g. in same example if only 10 positive labels available, returns 10 positive labels and
             30 negative labels
-    """
-    
-    gRNAs, OTs, labels = load_pkl_data(filepath_withr)    
+    """    
+        
+    gRNAs, OTs, labels = load_pkl_data(filepath_withr)        
     for i in range(len(gRNAs)): 
         gRNAs[i] = gRNAs[i].replace(' ', '')
         OTs[i] = OTs[i].replace(' ','')
@@ -336,7 +355,11 @@ def get_max_len(filepath_withr):
     return max([max1, max2])        
         
 def split_by_gRNAs(raw_data, test_pct, kfold=1, split_size_tol=0.20, rngseed=None):
-
+    
+    if len(raw_data['gRNA'][0]) == 23: 
+        for i in range(raw_data.shape[0]):             
+            raw_data['gRNA'][i] = raw_data['gRNA'][i][:-3]
+    
     groups = [raw_data for _, raw_data in raw_data.groupby('gRNA')]
     random.seed(rngseed)
     #Shuffle all data, but keep grouped by gRNAs        
@@ -419,10 +442,22 @@ def group_gRNAs(raw_data, shuffle=True, rngseed=None):
     
     return raw_data, groups
     
-
 def crispr_read_excel(filename, colgRNA, colOT, colLabel=None, sheetName='Sheet1', skipRows=0):
     parsedData = pd.DataFrame(columns=['gRNA', 'OT', 'label'])    
     df = pd.read_excel(filename, sheet_name=sheetName, skiprows=skipRows)    
+    
+    if colLabel is None: 
+        parsedData = parsedData.assign(gRNA=df.iloc[:,colgRNA])
+        parsedData = parsedData.assign(OT=df.iloc[:,colOT])        
+    else: 
+        parsedData = df.iloc[:,[colgRNA, colOT, colLabel]]
+    colNames = list(parsedData)
+    
+    return parsedData.rename(columns={colNames[0]: 'gRNA', colNames[1]:'OT', colNames[2]:'label'})
+    
+def crispr_read_csv(filename, colgRNA, colOT, colLabel=None, skipRows=0):
+    parsedData = pd.DataFrame(columns=['gRNA', 'OT', 'label'])    
+    df = pd.read_csv(filename, skiprows=skipRows)    
     
     if colLabel is None: 
         parsedData = parsedData.assign(gRNA=df.iloc[:,colgRNA])
