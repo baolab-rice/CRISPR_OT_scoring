@@ -1,8 +1,8 @@
 # Revision Notes: 
 
-+Rev. 1 (August 2021): original bioRxiv submission
++ Rev. 1 (August 2021): original bioRxiv submission
 
-+Rev. 2 (December 2021): updated version + models reflecting our bioRxiv update (planning to post, Dec. 2021)
++ Rev. 2 (December 2021): updated version + models reflecting our bioRxiv update (planning to post, Dec. 2021)
 
 # Dataset preparation and data processing for the CRISPR OT scoring paper
 
