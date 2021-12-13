@@ -19,7 +19,7 @@ from siamcrispr import ml_data_utils, network_utils, custom_evaluation_functions
 
 ###
 # Modify as needed
-filename = (r'../Supplementary_tables/Supplementary_Table_2_08252021.xlsx') # TrueOT
+filename = (r'../Supplementary_tables/Table_S2_TrueOT_v1_1.xlsx') # TrueOT
 
 #zero-indexed columns in file. See ml_data_utils.crispr_read_excel for details
 colgRNA = 1 
@@ -27,25 +27,29 @@ colOT = 2
 colLabel = 4 # use None if no label available
 skip_rows = 2 #number of rows to skip in xlsx file parsing
 dropDuplicates=True
+sheetName= 'TrueOT_v1.1_1211_reformat'
 ###
 
-seqDF = ml_data_utils.crispr_read_excel(filename, colgRNA, colOT, colLabel, skipRows=skip_rows) # pass excel info (column numbers and such)
+# pass excel info (column numbers and such)
+seqDF = ml_data_utils.crispr_read_excel(filename, colgRNA, colOT, colLabel, \
+                                        skipRows=skip_rows, sheetName=sheetName) 
 
 # Main
 if dropDuplicates:
     seqDF = seqDF.drop_duplicates()
+    
 modelFiles = []
 model_ensemble = []    
 clear_session() #speedup if running several times
 modelChoice = 'scnn' 
 modelClass = network_utils.SCNN 
 
-coreModel = modelClass((4,26,1), kWidth=[8], numFilters=[16384])
+coreModel = modelClass((4,26,1), kWidth=[6], numFilters=[8192])
 preproc= ml_data_utils.PreprocessOneHot4D(max_length=26, strip_dash=True)
 
-for cv in range(5):    
+for cv in range(3):    
     model = coreModel.construct()
-    model.load_weights('S1C\\S1C_cv' + str(cv+1) + '.h5')
+    model.load_weights('S1C\\S1C_k6_cv' + str(cv+1) + '.h5')
     model_ensemble.append(model)
 print('Models loaded') 
 
@@ -53,7 +57,7 @@ print('Models loaded')
 all_gRNAs, all_OTs, all_labels, _, _= preproc.preprocess(seqDF, shuffle=False, groupGRNA=False) 
 print('Data encoding complete')
 
-Y_preds = np.zeros((seqDF.shape[0], 5))
+Y_preds = np.zeros((seqDF.shape[0], 3))
 for m in range(len(model_ensemble)): 
     Y_preds[:,m] = model_ensemble[m].predict([all_gRNAs, all_OTs])[:,0]
     print('Ensemble member #{} complete'.format(m+1))
