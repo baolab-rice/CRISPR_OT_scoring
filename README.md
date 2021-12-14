@@ -96,7 +96,7 @@ sample_model_train.py: sample training script for training the S1C on the Proxy 
 ## Baseline Algorithms: Off-target scores calculation 
 **Folder: Algorithm**  
 
-The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S3.  
+The processing scripts adapted from previous publications. Please see details of each algorithm inside the folder. Their compositions of training set are available in Table S4.  
 
 
 + CCTOP off-target scores were computed based on the formula in the original paper:  
