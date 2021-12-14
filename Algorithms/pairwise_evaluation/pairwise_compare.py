@@ -67,7 +67,7 @@ if removeDuplicates:
     dupMaskBool = np.invert(np.asarray(currentData2.duplicated()))
     dupMask = np.where(dupMaskBool==True)
     
-all_gRNAs, all_OTs, all_labels, _, _= modelPreproc.preprocess(currentData, shuffle=False, groupGRNA=False, drop_duplicates=False) 
+all_gRNAs, all_OTs, all_labels, _, _= modelPreproc.preprocess(currentData, shuffle=False, groupGRNA=False, drop_dup_woPAM=False) 
 
 all_labels1 = np.asarray(df['TrueOT'])
 if not np.all(all_labels1==all_labels):     
@@ -112,8 +112,6 @@ for m in range(len(maskCompare)):
             
     Y_preds = np.asarray(df[maskCompare[m]])
     
-    if m == 10: 
-        pdb.set_trace()
     ROC_compare[m, 0] = roc_auc_score(all_labels[finalMask], Y_preds[finalMask])
     PVR_compare[m,0] = pr_auc(all_labels[finalMask], Y_preds[finalMask])
 
