@@ -82,7 +82,7 @@ A full package list is available at custom_scoring/package_list.txt
 
 We recommend running S1C_on_input_data.py and sample_model_train.py after cloning this repo and modifying an environment with the above version info to ensure things are working correctly. 
 
-### Running S1C on input data
+### Running S1C on new input data
 S1C_on_input_data.py: script for running S1C model on any input XLSX file. Currently set for TrueOT, but can simply change the file info with your own dataset. Use an Excel (.xlsx file) with columns of guide RNAs, DNA targets, and (optionally) labels. You may also use a CSV, although see the code for custom_scoring/siamcrispr/ml_data_utils.crispr_read_csv when editing. See the top few lines of this script and edit accordingly. 
 
 ### Training S1C on data
