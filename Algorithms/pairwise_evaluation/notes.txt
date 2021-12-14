@@ -1,18 +1,10 @@
-TrueOTlist_1008_extended_aligned_upto12MM_v10.xlsx is the TrueOT dataset
-TrueOText_v10+allscores_format.xlsx contains the raw output of various scoring algorithms
-custom_scoring\parsed_datasets\TrueOT\20-11-07_trueOTv10_ext_origInd.pkl is the pre-parsed TrueOT dataset in the same order
+TrueOT_v1_1_allscores.xlsx is TreuOT supplemented with baseline algorithms' raw scores on all viable datapoints in TrueOT. If no output is listed for a particular baseline algorithm on a particular datapoint, it means that datapoint could not be evaluated by the baseline (e.g., a bulge datapoint with a mismatch-only algorithm).
+
+To reproduce pairwise comparison results: 
++ baseline_overlap.py evaluates which gRNAs in the training sets of various baselines are in TrueOT and flags them for exclusion (output file:  TrueOT_v1_1_gRNA_overlap.xlsx)
++ overlap_mask_confirm.py merges the flagged gRNAs with the ''_allscores.xlsx file to generate exclusion masks for pairwise comparisons (output file: TrueOT_v1_1_rawmasks.xlsx)
++ pairwise_compare.py uses the ''_rawmasks.xlsx and the ''_allscores.xlsx along with the saved S1C ensemble to conduct pairwise comparisons. 
 
 **Using these files prevents any reording of the TrueOT excel data from throwing off the masks for pairwise comparisons**
-
-can run pairwise_compare.py to regenerate pairwise results 
-
-
-21-05-26_trueOTv10_indelMask.pkl is a stored mask of which trueOT datapoints have bulges (indels) between the guideRNA and OT 
-- again, this mask order matches the file list above.
-
-'Net_ori' is CRISPR-NET with original alignment information
-
-We tried some initial experiments with multiple alignment techniques (regex and CRISTA's custom method (Abadi et al)) 
-- but our published results solely rely on the original alignment information to avoid adding another confounding variable 
 
 Copied siamcrispr module here for path simplicity/user friendliness immediately upon repo cloning
