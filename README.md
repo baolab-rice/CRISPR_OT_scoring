@@ -77,6 +77,7 @@ Other necessary packages (with versions as we used them, but likely not as stric
 - numpy 1.19.5
 - pandas 1.2.3
 - sklearn 0.24.1
+- openpyxl 3.0.7
 
 A full package list is available at custom_scoring/package_list.txt
 
