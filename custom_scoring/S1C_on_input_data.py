@@ -49,7 +49,7 @@ preproc= ml_data_utils.PreprocessOneHot4D(max_length=26, strip_dash=True)
 
 for cv in range(3):    
     model = coreModel.construct()
-    model.load_weights('S1C\\S1C_k6_cv' + str(cv+1) + '.h5')
+    model.load_weights('S1C/S1C_k6_cv' + str(cv+1) + '.h5')
     model_ensemble.append(model)
 print('Models loaded') 
 
